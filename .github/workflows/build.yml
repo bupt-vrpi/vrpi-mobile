@@ -39,9 +39,11 @@ jobs:
 
       - name: Build Android Release
         run: |
+          keytool -genkey -v -keystore android/app/release.keystore -storepass android -alias androidreleasekey -keypass android -dname "CN=Android Release,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+          echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc sysctl.conf && sudo sysctl -p
           cd android && ./gradlew assembleRelease
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: app-release.aab
-          path: android/app/build/outputs/bundle/release/
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
