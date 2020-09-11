@@ -61,3 +61,6 @@ buck-out/
 # Expo
 .expo/*
 web-build/
+
+# Java
+java_pid*.hprof
