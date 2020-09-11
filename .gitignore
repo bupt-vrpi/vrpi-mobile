@@ -64,3 +64,11 @@ web-build/
 
 # Java
 java_pid*.hprof
+
+# yarn
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
