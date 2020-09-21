@@ -5,12 +5,19 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-nativ
 export default function App() {
   const [data, setData] = useState({} as ThreeAxisMeasurement);
   const [name, setName] = useState('Gyroscope');
+  const [sent, setSent] = useState(false);
 
-  let ip = '';
-  let port = '';
-  let sent = false;
+  let address = '';
   let subscription = Gyroscope.addListener((gyroscopeData) => {
-    sent && fetch(`http://${ip}:${port}`);
+    sent &&
+      fetch(address, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gyroscopeData),
+      });
     setData(gyroscopeData);
   });
   let interval: number = 220;
@@ -35,7 +42,7 @@ export default function App() {
       if (prevName === 'Gyroscope') {
         subscription = Accelerometer.addListener((accelerometerData) => {
           sent &&
-            fetch(`http://${ip}:${port}`, {
+            fetch(address, {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -49,7 +56,7 @@ export default function App() {
       } else {
         subscription = Gyroscope.addListener((gyroscopeData) => {
           sent &&
-            fetch(`http://${ip}:${port}`, {
+            fetch(address, {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -64,15 +71,25 @@ export default function App() {
     });
   };
 
+  const _sent = () => {
+    setSent((prev) => {
+      return !prev;
+    });
+  };
+
   const { x, y, z } = data;
   return (
     <View style={styles.sensor}>
-      <TextInput style={{ height: 40 }} placeholder="IP" onChangeText={(text) => (ip = text)} />
-      <TextInput style={{ height: 40 }} placeholder="Port" onChangeText={(text) => (port = text)} />
+      <TextInput
+        style={{ height: 40 }}
+        placeholder="Address"
+        onChangeText={(text) => (address = text)}
+      />
       <Text style={styles.text}>{name}</Text>
       <Text style={styles.text}>x: {x}</Text>
       <Text style={styles.text}>y: {y}</Text>
       <Text style={styles.text}>z: {z}</Text>
+      <Text style={styles.text}>sent: {sent}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={_toggle} style={styles.button}>
           <Text>Toggle</Text>
@@ -85,11 +102,7 @@ export default function App() {
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            sent = !sent;
-          }}
-          style={styles.button}>
+        <TouchableOpacity onPress={_sent} style={styles.button}>
           <Text>Sent</Text>
         </TouchableOpacity>
       </View>
