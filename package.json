@@ -8,39 +8,28 @@
     "test": "jest"
   },
   "dependencies": {
-    "expo": "^38.0.0",
-    "expo-sensors": "~9.0.1",
-    "expo-splash-screen": "^0.5.0",
-    "expo-status-bar": "^1.0.0",
-    "expo-updates": "~0.2.8",
-    "react": "16.11.0",
-    "react-dom": "16.11.0",
-    "react-native": "0.62.2",
-    "react-native-gesture-handler": "~1.6.0",
-    "react-native-reanimated": "~1.9.0",
-    "react-native-screens": "~2.9.0",
-    "react-native-unimodules": "~0.10.1",
-    "react-native-web": "~0.11.7"
+    "expo": "~39.0.2",
+    "expo-updates": "~0.3.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "~0.63.2",
+    "react-native-gesture-handler": "~1.7.0",
+    "react-native-reanimated": "~1.13.0",
+    "react-native-screens": "~2.10.1",
+    "react-native-unimodules": "~0.11.0",
+    "react-native-web": "~0.13.12"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
-    "@types/react": "~16.9.41",
+    "@types/react": "~16.9.35",
     "@types/react-dom": "~16.9.8",
-    "@types/react-native": "~0.62.13",
-    "@typescript-eslint/eslint-plugin": "^4.1.0",
-    "@typescript-eslint/parser": "^4.1.0",
-    "babel-preset-expo": "^8.2.3",
-    "eslint": "^7.8.1",
-    "eslint-config-universe": "^4.0.0",
-    "jest-expo": "^38.0.0",
-    "prettier": "^2.1.1",
+    "@types/react-native": "~0.63.2",
+    "babel-preset-expo": "~8.3.0",
+    "jest-expo": "~39.0.0",
     "typescript": "~3.9.5"
   },
   "jest": {
     "preset": "react-native"
   },
-  "private": true,
-  "eslintConfig": {
-    "extends": "universe/native"
-  }
+  "private": true
 }

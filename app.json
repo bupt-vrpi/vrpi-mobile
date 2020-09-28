@@ -5,16 +5,8 @@
     "name": "rn-vr-app",
     "slug": "rn-vr-app",
     "version": "1.0.0",
-    "orientation": "landscape",
-    "assetBundlePatterns": ["**/*"],
-    "icon": "./assets/images/icon.png",
-    "ios": {
-      "bundleIdentifier": "com.yxl.yourappname",
-      "buildNumber": "1.0.0"
-    },
-    "android": {
-      "package": "com.yxl.yourappname",
-      "versionCode": 1
-    }
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }
