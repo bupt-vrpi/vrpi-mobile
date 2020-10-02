@@ -1,7 +1,13 @@
 import { askAsync, MOTION } from "expo-permissions";
 import { Accelerometer, Gyroscope, ThreeAxisMeasurement } from "expo-sensors";
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 
 async function getPermission() {
   const { status } = await askAsync(MOTION);
@@ -18,6 +24,8 @@ async function getPermission() {
 }
 
 export default function App() {
+  const [url, setUrl] = useState("");
+  const [sent, setSent] = useState(false);
   const [available, setAvailable] = useState(false);
   const [updateInterval, setUpdateInterval] = useState(1000);
   const [accelerometerData, setAccelerometerData] = useState({
@@ -36,15 +44,21 @@ export default function App() {
     Gyroscope.setUpdateInterval(interval);
   };
 
+  let ws: WebSocket;
+
   getPermission()
     .then(() => {
       setAvailable(true);
 
       Accelerometer.addListener((data) => {
         setAccelerometerData(data);
+        try {
+          ws.send(JSON.stringify(data));
+        } catch {}
       });
       Gyroscope.addListener((data) => {
         setGyroscopeData(data);
+        // ws.send(JSON.stringify(data));
       });
       _setUpdateInterval(updateInterval);
     })
@@ -58,9 +72,10 @@ export default function App() {
           setUpdateInterval((oldValue) => oldValue + 100);
           _setUpdateInterval(updateInterval);
         }}
+        style={styles.button}
       >
         <Text>Increase</Text>
-      </TouchableOpacity>{" "}
+      </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
           setUpdateInterval(
@@ -68,8 +83,30 @@ export default function App() {
           );
           _setUpdateInterval(updateInterval);
         }}
+        style={styles.button}
       >
         <Text>Decrease</Text>
+      </TouchableOpacity>
+      <TextInput
+        style={{ height: 40, borderColor: "gray", borderWidth: 1, width: 320 }}
+        onChangeText={(text) => setUrl(text)}
+        value={url}
+      />
+      <TouchableOpacity
+        onPress={() => {
+          setSent((oldValue) => {
+            try {
+              ws.close();
+            } catch {}
+            if (!oldValue) {
+              ws = new WebSocket(url);
+            }
+            return !oldValue;
+          });
+        }}
+        style={styles.button}
+      >
+        <Text>Sent: {`${sent}`}</Text>
       </TouchableOpacity>
       {available && (
         <View>
@@ -93,6 +130,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  button: {
+    backgroundColor: "#eee",
+    padding: 10,
   },
   text: {
     textAlign: "center",
