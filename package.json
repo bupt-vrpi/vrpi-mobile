@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "expo": "~39.0.2",
+    "expo-sensors": "^9.1.0",
     "expo-updates": "~0.3.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -25,7 +26,11 @@
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",
     "babel-preset-expo": "~8.3.0",
+    "eslint": "^7.10.0",
+    "eslint-config-universe": "^4.0.0",
+    "expo-splash-screen": "^0.6.1",
     "jest-expo": "~39.0.0",
+    "prettier": "^2.1.2",
     "typescript": "~3.9.5"
   },
   "jest": {
