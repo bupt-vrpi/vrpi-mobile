@@ -1,13 +1,7 @@
 import { askAsync, MOTION } from "expo-permissions";
 import { Accelerometer, Gyroscope, ThreeAxisMeasurement } from "expo-sensors";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 async function getPermission() {
   const { status } = await askAsync(MOTION);
@@ -23,10 +17,11 @@ async function getPermission() {
   }
 }
 
+let sentA = false;
+let sentG = false;
+const ws = new WebSocket("http://www.vrcar.icu:24800/ws/");
+
 export default function App() {
-  const [url, setUrl] = useState("");
-  const [sent, setSent] = useState(false);
-  const [available, setAvailable] = useState(false);
   const [updateInterval, setUpdateInterval] = useState(1000);
   const [accelerometerData, setAccelerometerData] = useState({
     x: 0,
@@ -44,22 +39,24 @@ export default function App() {
     Gyroscope.setUpdateInterval(interval);
   };
 
-  let ws: WebSocket;
-
   getPermission()
     .then(() => {
-      setAvailable(true);
-
       Accelerometer.addListener((data) => {
-        setAccelerometerData(data);
-        try {
-          ws.send(JSON.stringify(data));
-        } catch {}
+        setAccelerometerData((old) => {
+          if (sentA && old !== data) {
+            ws.send(JSON.stringify(data));
+          }
+          return data;
+        });
       });
-      Gyroscope.addListener((data) => {
-        setGyroscopeData(data);
-        // ws.send(JSON.stringify(data));
-      });
+      Gyroscope.addListener((data) =>
+        setGyroscopeData((old) => {
+          if (sentG && old !== data) {
+            ws.send(JSON.stringify(data));
+          }
+          return data;
+        })
+      );
       _setUpdateInterval(updateInterval);
     })
     .catch(() => {});
@@ -87,39 +84,22 @@ export default function App() {
       >
         <Text>Decrease</Text>
       </TouchableOpacity>
-      <TextInput
-        style={{ height: 40, borderColor: "gray", borderWidth: 1, width: 320 }}
-        onChangeText={(text) => setUrl(text)}
-        value={url}
-      />
-      <TouchableOpacity
-        onPress={() => {
-          setSent((oldValue) => {
-            try {
-              ws.close();
-            } catch {}
-            if (!oldValue) {
-              ws = new WebSocket(url);
-            }
-            return !oldValue;
-          });
-        }}
-        style={styles.button}
-      >
-        <Text>Sent: {`${sent}`}</Text>
+      <TouchableOpacity onPress={() => (sentA = !sentA)} style={styles.button}>
+        <Text>Sent Accelerometer</Text>
       </TouchableOpacity>
-      {available && (
-        <View>
-          <Text style={styles.text}>Accelerometer:</Text>
-          <Text style={styles.text}>{accelerometerData.x}</Text>
-          <Text style={styles.text}>{accelerometerData.y}</Text>
-          <Text style={styles.text}>{accelerometerData.z}</Text>
-          <Text style={styles.text}>Gyroscope:</Text>
-          <Text style={styles.text}>{gyroscopeData.x}</Text>
-          <Text style={styles.text}>{gyroscopeData.y}</Text>
-          <Text style={styles.text}>{gyroscopeData.z}</Text>
-        </View>
-      )}
+      <TouchableOpacity onPress={() => (sentG = !sentG)} style={styles.button}>
+        <Text>Sent Gyroscope</Text>
+      </TouchableOpacity>
+      <View>
+        <Text style={styles.text}>Accelerometer:</Text>
+        <Text style={styles.text}>{accelerometerData.x}</Text>
+        <Text style={styles.text}>{accelerometerData.y}</Text>
+        <Text style={styles.text}>{accelerometerData.z}</Text>
+        <Text style={styles.text}>Gyroscope:</Text>
+        <Text style={styles.text}>{gyroscopeData.x}</Text>
+        <Text style={styles.text}>{gyroscopeData.y}</Text>
+        <Text style={styles.text}>{gyroscopeData.z}</Text>
+      </View>
     </View>
   );
 }
