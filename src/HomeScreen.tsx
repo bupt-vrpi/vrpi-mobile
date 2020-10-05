@@ -1,6 +1,12 @@
 import "react-native-gesture-handler";
 import { askAsync, MOTION } from "expo-permissions";
-import { Accelerometer, Gyroscope, ThreeAxisMeasurement } from "expo-sensors";
+import {
+  Accelerometer,
+  Gyroscope,
+  DeviceMotion,
+  DeviceMotionMeasurement,
+  ThreeAxisMeasurement,
+} from "expo-sensors";
 import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
@@ -13,6 +19,9 @@ async function getPermission() {
     if (!(await Gyroscope.isAvailableAsync())) {
       throw new Error("Gyroscope sensor is not available");
     }
+    if (!(await DeviceMotion.isAvailableAsync())) {
+      throw new Error("DeviceMotion sensor is not available");
+    }
   } else {
     throw new Error("Motion permission not granted");
   }
@@ -20,6 +29,7 @@ async function getPermission() {
 
 let sentA = false;
 let sentG = false;
+let sentD = false;
 const ws = new WebSocket("http://www.vrcar.icu:24800/ws/");
 
 export default function HomeScreen() {
@@ -34,14 +44,25 @@ export default function HomeScreen() {
     y: 0,
     z: 0,
   } as ThreeAxisMeasurement);
+  const [deviceMotionData, setDeviceMotionData] = useState({
+    acceleration: null,
+    accelerationIncludingGravity: { x: 0, y: 0, z: 0 },
+    rotation: { alpha: 0, beta: 0, gamma: 0 },
+    rotationRate: null,
+    interval: 1000,
+    orientation: 0,
+  } as DeviceMotionMeasurement);
 
   const _setUpdateInterval = (interval: number) => {
     Accelerometer.setUpdateInterval(interval);
     Gyroscope.setUpdateInterval(interval);
+    DeviceMotion.setUpdateInterval(interval);
   };
 
   getPermission()
     .then(() => {
+      _setUpdateInterval(updateInterval);
+
       Accelerometer.addListener((data) => {
         setAccelerometerData((old) => {
           if (sentA && old !== data) {
@@ -58,7 +79,14 @@ export default function HomeScreen() {
           return data;
         })
       );
-      _setUpdateInterval(updateInterval);
+      DeviceMotion.addListener((data) =>
+        setDeviceMotionData((old) => {
+          if (sentD && old !== data) {
+            ws.send(JSON.stringify(data));
+          }
+          return data;
+        })
+      );
     })
     .catch(() => {});
 
@@ -91,6 +119,9 @@ export default function HomeScreen() {
       <TouchableOpacity onPress={() => (sentG = !sentG)} style={styles.button}>
         <Text>Sent Gyroscope</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => (sentD = !sentD)} style={styles.button}>
+        <Text>Sent DeviceMotion</Text>
+      </TouchableOpacity>
       <View>
         <Text style={styles.text}>Accelerometer:</Text>
         <Text style={styles.text}>{accelerometerData.x}</Text>
@@ -100,6 +131,17 @@ export default function HomeScreen() {
         <Text style={styles.text}>{gyroscopeData.x}</Text>
         <Text style={styles.text}>{gyroscopeData.y}</Text>
         <Text style={styles.text}>{gyroscopeData.z}</Text>
+        <Text style={styles.text}>DeviceMotion:</Text>
+        <Text style={styles.text}>
+          {JSON.stringify(deviceMotionData.acceleration)}
+        </Text>
+        <Text style={styles.text}>
+          {JSON.stringify(deviceMotionData.rotation)}
+        </Text>
+        <Text style={styles.text}>
+          {JSON.stringify(deviceMotionData.rotationRate)}
+        </Text>
+        <Text style={styles.text}>{deviceMotionData.orientation}</Text>
       </View>
     </View>
   );
