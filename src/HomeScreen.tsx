@@ -1,5 +1,4 @@
 import "react-native-gesture-handler";
-import { askAsync, MOTION } from "expo-permissions";
 import {
   Accelerometer,
   Gyroscope,
@@ -7,25 +6,8 @@ import {
   DeviceMotionMeasurement,
   ThreeAxisMeasurement,
 } from "expo-sensors";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-
-async function getPermission() {
-  const { status } = await askAsync(MOTION);
-  if (status === "granted") {
-    if (!(await Accelerometer.isAvailableAsync())) {
-      throw new Error("Accelerometer sensor is not available");
-    }
-    if (!(await Gyroscope.isAvailableAsync())) {
-      throw new Error("Gyroscope sensor is not available");
-    }
-    if (!(await DeviceMotion.isAvailableAsync())) {
-      throw new Error("DeviceMotion sensor is not available");
-    }
-  } else {
-    throw new Error("Motion permission not granted");
-  }
-}
 
 let sentA = false;
 let sentG = false;
@@ -59,36 +41,30 @@ export default function HomeScreen() {
     DeviceMotion.setUpdateInterval(interval);
   };
 
-  getPermission()
-    .then(() => {
-      _setUpdateInterval(updateInterval);
+  _setUpdateInterval(updateInterval);
 
-      Accelerometer.addListener((data) => {
-        setAccelerometerData((old) => {
-          if (sentA && old !== data) {
-            ws.send(JSON.stringify(data));
-          }
-          return data;
-        });
-      });
-      Gyroscope.addListener((data) =>
-        setGyroscopeData((old) => {
-          if (sentG && old !== data) {
-            ws.send(JSON.stringify(data));
-          }
-          return data;
-        })
-      );
-      DeviceMotion.addListener((data) =>
-        setDeviceMotionData((old) => {
-          if (sentD && old !== data) {
-            ws.send(JSON.stringify(data));
-          }
-          return data;
-        })
-      );
-    })
-    .catch(() => {});
+  useEffect(() => {
+    const handlerA = Accelerometer.addListener((data) => {
+      sentA && ws.send(JSON.stringify(data));
+      setAccelerometerData(data);
+    });
+
+    const handlerG = Gyroscope.addListener((data) => {
+      sentG && ws.send(JSON.stringify(data));
+      setGyroscopeData(data);
+    });
+
+    const handlerD = DeviceMotion.addListener((data) => {
+      sentD && ws.send(JSON.stringify(data));
+      setDeviceMotionData(data);
+    });
+
+    return () => {
+      handlerA.remove();
+      handlerG.remove();
+      handlerD.remove();
+    };
+  });
 
   return (
     <View style={styles.container}>

@@ -3,6 +3,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { askAsync, MOTION } from "expo-permissions";
+import { Accelerometer, Gyroscope, DeviceMotion } from "expo-sensors";
 import React from "react";
 
 import HomeScreen from "./src/HomeScreen";
@@ -29,7 +31,26 @@ function VideoStackScreen() {
 }
 const Tab = createBottomTabNavigator();
 
+async function getPermission() {
+  const { status } = await askAsync(MOTION);
+  if (status === "granted") {
+    if (!(await Accelerometer.isAvailableAsync())) {
+      throw new Error("Accelerometer sensor is not available");
+    }
+    if (!(await Gyroscope.isAvailableAsync())) {
+      throw new Error("Gyroscope sensor is not available");
+    }
+    if (!(await DeviceMotion.isAvailableAsync())) {
+      throw new Error("DeviceMotion sensor is not available");
+    }
+  } else {
+    throw new Error("Motion permission not granted");
+  }
+}
+
 export default function App() {
+  getPermission();
+
   return (
     <NavigationContainer>
       <Tab.Navigator
