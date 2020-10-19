@@ -1,31 +1,12 @@
 import "react-native-gesture-handler";
-import {
-  Accelerometer,
-  Gyroscope,
-  DeviceMotion,
-  DeviceMotionMeasurement,
-  ThreeAxisMeasurement,
-} from "expo-sensors";
+import { DeviceMotion, DeviceMotionMeasurement } from "expo-sensors";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-let sentA = false;
-let sentG = false;
-let sentD = false;
 const ws = new WebSocket("http://www.vrcar.icu:24800/ws/");
 
-export default function HomeScreen() {
-  const [updateInterval, setUpdateInterval] = useState(1000);
-  const [accelerometerData, setAccelerometerData] = useState({
-    x: 0,
-    y: 0,
-    z: 0,
-  } as ThreeAxisMeasurement);
-  const [gyroscopeData, setGyroscopeData] = useState({
-    x: 0,
-    y: 0,
-    z: 0,
-  } as ThreeAxisMeasurement);
+export const HomeScreen = () => {
+  const [updateInterval, setUpdateInterval] = useState(50);
   const [deviceMotionData, setDeviceMotionData] = useState({
     acceleration: null,
     accelerationIncludingGravity: { x: 0, y: 0, z: 0 },
@@ -35,93 +16,47 @@ export default function HomeScreen() {
     orientation: 0,
   } as DeviceMotionMeasurement);
 
-  const _setUpdateInterval = (interval: number) => {
-    Accelerometer.setUpdateInterval(interval);
-    Gyroscope.setUpdateInterval(interval);
-    DeviceMotion.setUpdateInterval(interval);
-  };
-
-  _setUpdateInterval(updateInterval);
+  DeviceMotion.setUpdateInterval(updateInterval);
 
   useEffect(() => {
-    const handlerA = Accelerometer.addListener((data) => {
-      sentA && ws.send(JSON.stringify(data));
-      setAccelerometerData(data);
-    });
-
-    const handlerG = Gyroscope.addListener((data) => {
-      sentG && ws.send(JSON.stringify(data));
-      setGyroscopeData(data);
-    });
-
-    const handlerD = DeviceMotion.addListener((data) => {
-      sentD && ws.send(JSON.stringify(data));
+    const handler = DeviceMotion.addListener((data) => {
+      try {
+        ws.send(JSON.stringify(data));
+      } catch {}
       setDeviceMotionData(data);
     });
 
     return () => {
-      handlerA.remove();
-      handlerG.remove();
-      handlerD.remove();
+      handler.remove();
     };
-  });
+  }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>UpdateInterval: {updateInterval}</Text>
       <TouchableOpacity
-        onPress={() => {
-          setUpdateInterval((oldValue) => oldValue + 100);
-          _setUpdateInterval(updateInterval);
-        }}
+        onPress={() => setUpdateInterval((oldValue) => oldValue + 10)}
         style={styles.button}
       >
         <Text>Increase</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => {
-          setUpdateInterval(
-            (oldValue) => oldValue - (oldValue > 100 ? 100 : 0)
-          );
-          _setUpdateInterval(updateInterval);
-        }}
+        onPress={() =>
+          setUpdateInterval((oldValue) => oldValue - (oldValue > 10 ? 10 : 0))
+        }
         style={styles.button}
       >
         <Text>Decrease</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => (sentA = !sentA)} style={styles.button}>
-        <Text>Sent Accelerometer</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => (sentG = !sentG)} style={styles.button}>
-        <Text>Sent Gyroscope</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => (sentD = !sentD)} style={styles.button}>
-        <Text>Sent DeviceMotion</Text>
-      </TouchableOpacity>
       <View>
-        <Text style={styles.text}>Accelerometer:</Text>
-        <Text style={styles.text}>{accelerometerData.x}</Text>
-        <Text style={styles.text}>{accelerometerData.y}</Text>
-        <Text style={styles.text}>{accelerometerData.z}</Text>
-        <Text style={styles.text}>Gyroscope:</Text>
-        <Text style={styles.text}>{gyroscopeData.x}</Text>
-        <Text style={styles.text}>{gyroscopeData.y}</Text>
-        <Text style={styles.text}>{gyroscopeData.z}</Text>
-        <Text style={styles.text}>DeviceMotion:</Text>
-        <Text style={styles.text}>
-          {JSON.stringify(deviceMotionData.acceleration)}
-        </Text>
-        <Text style={styles.text}>
-          {JSON.stringify(deviceMotionData.rotation)}
-        </Text>
-        <Text style={styles.text}>
-          {JSON.stringify(deviceMotionData.rotationRate)}
-        </Text>
-        <Text style={styles.text}>{deviceMotionData.orientation}</Text>
+        <Text style={styles.text}>Rotation:</Text>
+        <Text style={styles.text}>{deviceMotionData.rotation.alpha}</Text>
+        <Text style={styles.text}>{deviceMotionData.rotation.beta}</Text>
+        <Text style={styles.text}>{deviceMotionData.rotation.gamma}</Text>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

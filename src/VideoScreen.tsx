@@ -1,7 +1,7 @@
 import { Video } from "expo-av";
 import React from "react";
 
-export default function VideoScreen() {
+export const VideoScreen = () => {
   return (
     <Video
       source={{
@@ -16,4 +16,4 @@ export default function VideoScreen() {
       style={{ width: 300, height: 300 }}
     />
   );
-}
+};
