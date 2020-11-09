@@ -13,7 +13,7 @@ export const HomeScreen = () => {
   useEffect(() => {
     const handler = DeviceMotion.addListener((data) => {
       try {
-        ws.send(JSON.stringify(data));
+        ws.send(JSON.stringify(data.rotation));
       } catch {}
     });
 
