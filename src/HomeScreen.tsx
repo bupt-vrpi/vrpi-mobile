@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import { DeviceMotion, DeviceMotionMeasurement } from "expo-sensors";
+import { DeviceMotion } from "expo-sensors";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
@@ -7,14 +7,6 @@ const ws = new WebSocket("http://www.vrcar.icu:24800/ws/");
 
 export const HomeScreen = () => {
   const [updateInterval, setUpdateInterval] = useState(50);
-  const [deviceMotionData, setDeviceMotionData] = useState({
-    acceleration: null,
-    accelerationIncludingGravity: { x: 0, y: 0, z: 0 },
-    rotation: { alpha: 0, beta: 0, gamma: 0 },
-    rotationRate: null,
-    interval: 1000,
-    orientation: 0,
-  } as DeviceMotionMeasurement);
 
   DeviceMotion.setUpdateInterval(updateInterval);
 
@@ -23,7 +15,6 @@ export const HomeScreen = () => {
       try {
         ws.send(JSON.stringify(data));
       } catch {}
-      setDeviceMotionData(data);
     });
 
     return () => {
@@ -48,12 +39,6 @@ export const HomeScreen = () => {
       >
         <Text>Decrease</Text>
       </TouchableOpacity>
-      <View>
-        <Text style={styles.text}>Rotation:</Text>
-        <Text style={styles.text}>{deviceMotionData.rotation.alpha}</Text>
-        <Text style={styles.text}>{deviceMotionData.rotation.beta}</Text>
-        <Text style={styles.text}>{deviceMotionData.rotation.gamma}</Text>
-      </View>
     </View>
   );
 };

@@ -5,6 +5,9 @@
     "name": "rn-vr-app",
     "slug": "rn-vr-app",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "requireFullScreen": true
+    }
   }
 }

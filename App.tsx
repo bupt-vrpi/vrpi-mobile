@@ -5,7 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 
-import { HomeScreen, VideoScreen } from "./src";
+import { HomeScreen, VideoScreen, VideoPlayerScreen } from "./src";
 
 const HomeStack = createStackNavigator();
 
@@ -21,8 +21,9 @@ const SettingsStack = createStackNavigator();
 
 function VideoStackScreen() {
   return (
-    <SettingsStack.Navigator>
+    <SettingsStack.Navigator mode="modal" headerMode="none">
       <SettingsStack.Screen name="Video" component={VideoScreen} />
+      <SettingsStack.Screen name="Video Player" component={VideoPlayerScreen} />
     </SettingsStack.Navigator>
   );
 }
@@ -35,10 +36,7 @@ export default function App() {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
             let iconName = "ios-home";
-
-            if (route.name === "Home") {
-              iconName = "ios-home";
-            } else if (route.name === "Video") {
+            if (route.name === "Video") {
               iconName = "ios-videocam";
             }
             return <Ionicons name={iconName} size={size} color={color} />;
