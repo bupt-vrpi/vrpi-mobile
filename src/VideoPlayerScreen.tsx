@@ -8,7 +8,7 @@ const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
 
 export const VideoPlayerScreen = () => {
-  // lockAsync(OrientationLock.LANDSCAPE);
+  lockAsync(OrientationLock.LANDSCAPE);
   const [dimensions, setDimensions] = useState({ window, screen });
 
   const onChange = ({
