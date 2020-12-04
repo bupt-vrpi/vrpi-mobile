@@ -35,7 +35,7 @@ export default function App() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
-            let iconName = "ios-home";
+            let iconName: "ios-home" | "ios-videocam" = "ios-home";
             if (route.name === "Video") {
               iconName = "ios-videocam";
             }
