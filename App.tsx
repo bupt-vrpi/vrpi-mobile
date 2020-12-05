@@ -31,21 +31,22 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
-            let iconName: "ios-home" | "ios-videocam" = "ios-home";
-            if (route.name === "Video") {
-              iconName = "ios-videocam";
-            }
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen name="Home" component={HomeStackScreen} />
-        <Tab.Screen name="Video" component={VideoStackScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <HomeScreen />
+    // <NavigationContainer>
+    //   <Tab.Navigator
+    //     screenOptions={({ route }) => ({
+    //       tabBarIcon: ({ color, size }) => {
+    //         let iconName: "ios-home" | "ios-videocam" = "ios-home";
+    //         if (route.name === "Video") {
+    //           iconName = "ios-videocam";
+    //         }
+    //         return <Ionicons name={iconName} size={size} color={color} />;
+    //       },
+    //     })}
+    //   >
+    //     <Tab.Screen name="Home" component={HomeStackScreen} />
+    //     <Tab.Screen name="Video" component={VideoStackScreen} />
+    //   </Tab.Navigator>
+    // </NavigationContainer>
   );
 }

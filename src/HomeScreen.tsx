@@ -1,60 +1,56 @@
-import "react-native-gesture-handler";
 import { DeviceMotion } from "expo-sensors";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { MediaStream, RTCView } from "react-native-webrtc";
 
-const ws = new WebSocket("http://www.vrcar.icu:24800/ws/");
+import { createAnswer, createOffer, rtc, sendMessage } from "./utils";
+
+DeviceMotion.setUpdateInterval(5000);
+
+DeviceMotion.addListener(({ rotation }) => {
+  sendMessage("rotation", rotation);
+});
 
 export const HomeScreen = () => {
-  const [updateInterval, setUpdateInterval] = useState(50);
-
-  DeviceMotion.setUpdateInterval(updateInterval);
+  /* const [localStream, setLocalStream] = useState<MediaStream | undefined>(
+    undefined
+  ); */
+  const [remoteStream, setRemoteStream] = useState<MediaStream | undefined>(
+    undefined
+  );
 
   useEffect(() => {
-    const handler = DeviceMotion.addListener((data) => {
-      try {
-        ws.send(JSON.stringify(data.rotation));
-      } catch {}
-    });
-
-    return () => {
-      handler.remove();
+    rtc.onaddstream = ({ stream }) => {
+      setRemoteStream(stream);
     };
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>UpdateInterval: {updateInterval}</Text>
-      <TouchableOpacity
-        onPress={() => setUpdateInterval((oldValue) => oldValue + 10)}
-        style={styles.button}
-      >
-        <Text>Increase</Text>
+    <View
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      }}
+    >
+      <RTCView
+        style={{ flex: 1 }}
+        key={2}
+        streamURL={remoteStream?.toURL() ?? ""}
+      />
+
+      <TouchableOpacity onPress={createOffer}>
+        <View>
+          <Text>Offer</Text>
+        </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() =>
-          setUpdateInterval((oldValue) => oldValue - (oldValue > 10 ? 10 : 0))
-        }
-        style={styles.button}
-      >
-        <Text>Decrease</Text>
+      <TouchableOpacity onPress={createAnswer}>
+        <View>
+          <Text>Answer</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  button: {
-    backgroundColor: "#eee",
-    padding: 10,
-  },
-  text: {
-    textAlign: "center",
-  },
-});
