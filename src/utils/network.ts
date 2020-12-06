@@ -4,7 +4,7 @@ import {
   RTCPeerConnection,
 } from "react-native-webrtc";
 
-export const URL = "wss://2251c0a39094.ngrok.io";
+export const URL = "ws://www.vrcar.icu:8080";
 
 export const ws = new WebSocket(URL);
 
