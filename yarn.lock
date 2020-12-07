@@ -4382,6 +4382,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-keep-awake@npm:^8.3.0":
+  version: 8.4.0
+  resolution: "expo-keep-awake@npm:8.4.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 0a11af1afedbdf7d0d3aebae030cb6bfae22d051d39c9d9a90944536ea3ee472607b882b19af6de034ea9534452ca1cc62449bdedbdeafffb498704e2170d182
+  languageName: node
+  linkType: hard
+
 "expo-permissions@npm:~9.3.0":
   version: 9.3.0
   resolution: "expo-permissions@npm:9.3.0"
@@ -4392,12 +4402,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-screen-orientation@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "expo-screen-orientation@npm:2.1.0"
+  dependencies:
+    fbjs: 1.0.0
+  checksum: 6ee9b2845a6eaac7435b7ad279d31e6ecd1e7b6af1e5fa71c7e7c55b138b5e1b7d7b3053715fd32e1ac89c421edece0f6bd89d038c32330fa4fafecdc82bac46
+  languageName: node
+  linkType: hard
+
 "expo-sensors@npm:9.1.0":
   version: 9.1.0
   resolution: "expo-sensors@npm:9.1.0"
   dependencies:
     invariant: ^2.2.4
   checksum: cf6f68e0f4a5b8d86c89c0b67e413e9f15b14385e3e1040f34254df2691d571f3841c67636bf0485fdf37fa5cfa03238864e8d1717474e0f969c4c0ecec2c98a
+  languageName: node
+  linkType: hard
+
+"expo-status-bar@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "expo-status-bar@npm:1.0.3"
+  checksum: 07f90ce536581196adb0705f8ce80b108a962fd49246635556d9795b8ea6bd253bb88aac3d24eb7a46bd5203de8f7090722b5f8ade38d598c52d6ef5c4a72657
   languageName: node
   linkType: hard
 
@@ -8911,7 +8937,10 @@ resolve@1.1.7:
     eslint: 7.10.0
     eslint-config-universe: 4.0.0
     expo-font: ^8.3.0
+    expo-keep-awake: ^8.3.0
+    expo-screen-orientation: ^2.0.0
     expo-sensors: 9.1.0
+    expo-status-bar: ^1.0.2
     jest: 25.5.4
     metro-react-native-babel-preset: 0.59.0
     prettier: 2.1.2

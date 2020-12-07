@@ -4,7 +4,7 @@ import {
   RTCPeerConnection,
 } from "react-native-webrtc";
 
-export const URL = "ws://www.vrcar.icu:8080";
+export const URL = "ws://8.131.233.47:8080";
 
 export const ws = new WebSocket(URL);
 
@@ -28,6 +28,7 @@ ws.onmessage = ({ data }: MessageEvent<string>) => {
   const { type, msg } = JSON.parse(data) as { type: MessageType; msg: any };
 
   if (type === "offerOrAnswer") {
+    console.log("msg");
     rtc.setRemoteDescription(new RTCSessionDescription(msg));
   } else if (type === "candidate") {
     rtc.addIceCandidate(new RTCIceCandidate(msg));
